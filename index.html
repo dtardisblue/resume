@@ -1,0 +1,663 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>徐洪磊 — 个人简历</title>
+    <style>
+        :root {
+            --primary: #1a365d;
+            --primary-light: #2b6cb0;
+            --accent: #3182ce;
+            --bg: #ffffff;
+            --bg-light: #f7fafc;
+            --text: #2d3748;
+            --text-light: #4a5568;
+            --border: #e2e8f0;
+            --shadow: 0 1px 3px rgba(0,0,0,0.08), 0 1px 2px rgba(0,0,0,0.06);
+            --shadow-md: 0 4px 6px rgba(0,0,0,0.07), 0 2px 4px rgba(0,0,0,0.06);
+            --radius: 8px;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        html { scroll-behavior: smooth; }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+            color: var(--text);
+            background: var(--bg);
+            line-height: 1.7;
+            font-size: 15px;
+        }
+
+        /* Navigation */
+        .nav {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            background: rgba(255,255,255,0.95);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid var(--border);
+            z-index: 1000;
+            padding: 0 24px;
+        }
+        .nav-inner {
+            max-width: 960px;
+            margin: 0 auto;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            height: 56px;
+        }
+        .nav-logo {
+            font-size: 18px;
+            font-weight: 700;
+            color: var(--primary);
+            letter-spacing: 0.5px;
+        }
+        .nav-links {
+            display: flex;
+            gap: 28px;
+            list-style: none;
+        }
+        .nav-links a {
+            text-decoration: none;
+            color: var(--text-light);
+            font-size: 14px;
+            font-weight: 500;
+            transition: color 0.2s;
+        }
+        .nav-links a:hover { color: var(--accent); }
+
+        .nav-toggle {
+            display: none;
+            background: none;
+            border: none;
+            font-size: 24px;
+            cursor: pointer;
+            color: var(--text);
+        }
+
+        /* Section */
+        .section {
+            padding: 80px 24px;
+        }
+        .section-alt {
+            background: var(--bg-light);
+        }
+        .section-inner {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        .section-title {
+            font-size: 26px;
+            font-weight: 700;
+            color: var(--primary);
+            margin-bottom: 36px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        .section-title::after {
+            content: '';
+            flex: 1;
+            height: 1px;
+            background: var(--border);
+        }
+
+        /* Hero */
+        .hero {
+            padding: 120px 24px 80px;
+            background: linear-gradient(135deg, #f0f4f8 0%, #e2e8f0 100%);
+        }
+        .hero-inner {
+            max-width: 800px;
+            margin: 0 auto;
+            display: flex;
+            align-items: center;
+            gap: 48px;
+        }
+        .hero-avatar {
+            width: 140px;
+            height: 140px;
+            border-radius: 50%;
+            background: white;
+            border: 4px solid white;
+            box-shadow: var(--shadow-md);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            overflow: hidden;
+        }
+        .hero-avatar img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        .hero-avatar-placeholder {
+            width: 100%;
+            height: 100%;
+            background: var(--bg-light);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--text-light);
+            font-size: 13px;
+        }
+        .hero-text h1 {
+            font-size: 36px;
+            font-weight: 800;
+            color: var(--primary);
+            margin-bottom: 6px;
+        }
+        .hero-text .subtitle {
+            font-size: 17px;
+            color: var(--text-light);
+            margin-bottom: 16px;
+        }
+        .hero-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+        .hero-tag {
+            background: white;
+            color: var(--primary-light);
+            padding: 4px 14px;
+            border-radius: 20px;
+            font-size: 13px;
+            font-weight: 500;
+            border: 1px solid var(--border);
+        }
+
+        /* Info Grid */
+        .info-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 16px;
+        }
+        .info-item {
+            display: flex;
+            gap: 8px;
+            align-items: baseline;
+        }
+        .info-label {
+            color: var(--text-light);
+            font-size: 14px;
+            white-space: nowrap;
+        }
+        .info-value {
+            font-weight: 500;
+            color: var(--text);
+        }
+
+        /* Timeline */
+        .timeline { position: relative; }
+        .timeline::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0;
+            bottom: 0;
+            width: 2px;
+            background: var(--border);
+        }
+        .timeline-item {
+            position: relative;
+            padding-left: 28px;
+            margin-bottom: 36px;
+        }
+        .timeline-item:last-child { margin-bottom: 0; }
+        .timeline-item::before {
+            content: '';
+            position: absolute;
+            left: -4px;
+            top: 6px;
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: var(--accent);
+            border: 2px solid white;
+            box-shadow: 0 0 0 2px var(--accent);
+        }
+        .timeline-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: baseline;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-bottom: 4px;
+        }
+        .timeline-title {
+            font-weight: 700;
+            font-size: 17px;
+            color: var(--primary);
+        }
+        .timeline-date {
+            font-size: 13px;
+            color: var(--text-light);
+            background: var(--bg-light);
+            padding: 2px 12px;
+            border-radius: 12px;
+            white-space: nowrap;
+        }
+        .timeline-subtitle {
+            font-size: 14px;
+            color: var(--text-light);
+            margin-bottom: 10px;
+        }
+        .timeline-list {
+            list-style: none;
+            font-size: 14px;
+            color: var(--text);
+        }
+        .timeline-list li {
+            position: relative;
+            padding-left: 16px;
+            margin-bottom: 6px;
+        }
+        .timeline-list li::before {
+            content: '•';
+            position: absolute;
+            left: 0;
+            color: var(--accent);
+        }
+
+        /* Skills */
+        .skills-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+            gap: 24px;
+        }
+        .skill-card {
+            background: white;
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 24px;
+        }
+        .skill-card h3 {
+            font-size: 15px;
+            font-weight: 700;
+            color: var(--primary);
+            margin-bottom: 12px;
+        }
+        .skill-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+        }
+        .skill-tag {
+            background: var(--bg-light);
+            color: var(--text);
+            padding: 4px 12px;
+            border-radius: 4px;
+            font-size: 13px;
+            border: 1px solid var(--border);
+        }
+
+        /* Project Cards */
+        .project-card {
+            background: white;
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 24px;
+            margin-bottom: 16px;
+        }
+        .project-card:last-child { margin-bottom: 0; }
+        .project-card h3 {
+            font-size: 16px;
+            font-weight: 700;
+            color: var(--primary);
+            margin-bottom: 8px;
+        }
+        .project-card p {
+            font-size: 14px;
+            color: var(--text-light);
+        }
+        .badge {
+            display: inline-block;
+            background: #ebf4ff;
+            color: var(--accent);
+            padding: 2px 10px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+
+        /* Contact */
+        .contact-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+            gap: 16px;
+        }
+        .contact-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 16px;
+            background: white;
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            font-size: 14px;
+            color: var(--text);
+        }
+        .contact-icon {
+            font-size: 20px;
+            flex-shrink: 0;
+        }
+
+        /* Footer */
+        .footer {
+            text-align: center;
+            padding: 32px 24px;
+            font-size: 13px;
+            color: var(--text-light);
+            border-top: 1px solid var(--border);
+        }
+
+        /* Job target banner */
+        .target-banner {
+            background: var(--primary);
+            color: white;
+            padding: 20px 24px;
+            border-radius: var(--radius);
+            text-align: center;
+            font-size: 16px;
+            font-weight: 500;
+            line-height: 1.6;
+        }
+
+        /* Mobile */
+        @media (max-width: 768px) {
+            .hero-inner {
+                flex-direction: column;
+                text-align: center;
+                gap: 24px;
+            }
+            .hero-avatar {
+                width: 110px;
+                height: 110px;
+            }
+            .hero-text h1 { font-size: 28px; }
+            .nav-links { display: none; }
+            .nav-links.open {
+                display: flex;
+                flex-direction: column;
+                position: absolute;
+                top: 56px;
+                left: 0;
+                right: 0;
+                background: white;
+                border-bottom: 1px solid var(--border);
+                padding: 16px 24px;
+                gap: 12px;
+            }
+            .nav-toggle { display: block; }
+            .timeline-header { flex-direction: column; }
+            .skills-grid { grid-template-columns: 1fr; }
+            .info-grid { grid-template-columns: 1fr 1fr; }
+            .section { padding: 56px 16px; }
+            .hero { padding: 100px 16px 60px; }
+        }
+
+        @media (max-width: 480px) {
+            .info-grid { grid-template-columns: 1fr; }
+            .contact-grid { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+
+<!-- Navigation -->
+<nav class="nav">
+    <div class="nav-inner">
+        <a href="#" class="nav-logo">XU Honglei</a>
+        <button class="nav-toggle" id="navToggle" aria-label="菜单">☰</button>
+        <ul class="nav-links" id="navLinks">
+            <li><a href="#about">关于我</a></li>
+            <li><a href="#education">教育背景</a></li>
+            <li><a href="#experience">实习经历</a></li>
+            <li><a href="#projects">项目经历</a></li>
+            <li><a href="#skills">技能证书</a></li>
+            <li><a href="#contact">联系方式</a></li>
+        </ul>
+    </div>
+</nav>
+
+<!-- Hero -->
+<header class="hero">
+    <div class="hero-inner">
+        <div class="hero-avatar">
+            <div class="hero-avatar-placeholder">替换为<br>你的照片</div>
+        </div>
+        <div class="hero-text">
+            <h1>徐洪磊</h1>
+            <p class="subtitle">江苏大学 · 国际经济与贸易（本科在读）</p>
+            <div class="hero-tags">
+                <span class="hero-tag">合规风控</span>
+                <span class="hero-tag">反洗钱</span>
+                <span class="hero-tag">数据分析</span>
+                <span class="hero-tag">信贷管理</span>
+            </div>
+        </div>
+    </div>
+</header>
+
+<!-- 求职意向 -->
+<section class="section">
+    <div class="section-inner">
+        <div class="target-banner">
+            <strong>求职意向：</strong>银行 / 券商 / 消费金融 / 支付公司  ·  合规、风控、反洗钱、运营、法律事务实习生
+        </div>
+    </div>
+</section>
+
+<!-- 关于我 -->
+<section id="about" class="section section-alt">
+    <div class="section-inner">
+        <h2 class="section-title">基本信息</h2>
+        <div class="info-grid">
+            <div class="info-item">
+                <span class="info-label">姓名</span>
+                <span class="info-value">徐洪磊</span>
+            </div>
+            <div class="info-item">
+                <span class="info-label">民族</span>
+                <span class="info-value">汉族</span>
+            </div>
+            <div class="info-item">
+                <span class="info-label">出生年月</span>
+                <span class="info-value">2006.05</span>
+            </div>
+            <div class="info-item">
+                <span class="info-label">身高</span>
+                <span class="info-value">181 cm</span>
+            </div>
+            <div class="info-item">
+                <span class="info-label">政治面貌</span>
+                <span class="info-value">中国共青团团员</span>
+            </div>
+            <div class="info-item">
+                <span class="info-label">就读院校</span>
+                <span class="info-value">江苏大学</span>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- 教育背景 -->
+<section id="education" class="section">
+    <div class="section-inner">
+        <h2 class="section-title">教育背景</h2>
+        <div class="timeline">
+            <div class="timeline-item">
+                <div class="timeline-header">
+                    <span class="timeline-title">江苏大学</span>
+                    <span class="timeline-date">2024.09 — 至今</span>
+                </div>
+                <p class="timeline-subtitle" style="margin-bottom:12px;">国际经济与贸易（本科）</p>
+                <p style="font-size:14px;color:var(--text-light);">
+                    主修课程：货币金融学、金融风险管理、宏观/微观经济学、国际金融、统计学、概率论与数理统计、Python数据分析、财务管理、财政学等
+                </p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- 实习经历 -->
+<section id="experience" class="section section-alt">
+    <div class="section-inner">
+        <h2 class="section-title">实习经历</h2>
+        <div class="timeline">
+
+            <div class="timeline-item">
+                <div class="timeline-header">
+                    <span class="timeline-title">永丰银行（中国）总行</span>
+                    <span class="timeline-date">2025.11 — 2026.04</span>
+                </div>
+                <p class="timeline-subtitle">永丰金融控股股份有限公司 · 信贷管理部 · 中后台实习生</p>
+                <ul class="timeline-list">
+                    <li>尽调分析：深度参与4家消费金融公司的尽调报告撰写，覆盖股东背景、资产质量等模块，用于评审上会</li>
+                    <li>贷后管理：完成6家担保公司贷后复审报告，定期追踪代偿率、担保放大倍数等风险指标，协助预警异常情况</li>
+                    <li>财务分析：解析合作方财务报表（资产负债表、利润表等），计算关键财务比率，辅助判断担保能力及经营情况</li>
+                    <li>监管响应：累计撰写60+份金监局监管转办案件处理结果报告，确保内容合规、反馈及时，锻炼公文写作能力</li>
+                </ul>
+            </div>
+
+            <div class="timeline-item">
+                <div class="timeline-header">
+                    <span class="timeline-title">上海仙舍生物科技有限公司</span>
+                    <span class="timeline-date">2025.07 — 2025.09</span>
+                </div>
+                <p class="timeline-subtitle">Goodchem Technology Co., Limited · 销售部国际业务部 · 外贸合规与数据分析实习生</p>
+                <ul class="timeline-list">
+                    <li>负责东欧市场200+潜在客户背景调查，建立客户风险清单与信用档案</li>
+                    <li>使用Excel高级函数（VLOOKUP、数据透视表等）进行客户信用评估与竞争分析</li>
+                    <li>参与B2B平台产品信息维护，确保符合欧盟REACH法规及中国海关合规要求</li>
+                    <li>协助国际样品寄送海关申报与外汇管制材料准备，了解外贸合规实务</li>
+                </ul>
+            </div>
+
+            <div class="timeline-item">
+                <div class="timeline-header">
+                    <span class="timeline-title">中信证券江苏分公司</span>
+                    <span class="timeline-date">2025.01 — 2025.03</span>
+                </div>
+                <p class="timeline-subtitle">财富管理实习生</p>
+                <ul class="timeline-list">
+                    <li>在部门导师一对一带教下，学习投资者适当性管理、KYC与反洗钱客户身份识别流程</li>
+                    <li>参与每日晨会与合规培训，记录监管动态与市场风险要点</li>
+                    <li>协助使用CRM系统进行客户信息录入与更新，学习投资者教育与产品风险匹配实务</li>
+                    <li>支持投资者教育活动前期准备与现场执行，初步了解券商合规风控日常</li>
+                </ul>
+            </div>
+
+        </div>
+    </div>
+</section>
+
+<!-- 校园项目经历 -->
+<section id="projects" class="section">
+    <div class="section-inner">
+        <h2 class="section-title">校园项目经历</h2>
+
+        <div class="project-card">
+            <span class="badge">A+ 小组项目</span>
+            <h3>商业银行操作风险案例分析</h3>
+            <p>基于银保监会管理办法，分析股份行员工舞弊案例并提出防控建议 — 货币金融学课程项目</p>
+        </div>
+
+        <div class="project-card">
+            <span class="badge">Python + Excel</span>
+            <h3>国际贸易客户风险评分模型</h3>
+            <p>使用 Pandas 清洗模拟交易数据，构建简易高风险客户标记规则</p>
+        </div>
+    </div>
+</section>
+
+<!-- 技能与证书 -->
+<section id="skills" class="section section-alt">
+    <div class="section-inner">
+        <h2 class="section-title">技能与证书</h2>
+        <div class="skills-grid">
+
+            <div class="skill-card">
+                <h3>语言能力</h3>
+                <div class="skill-tags">
+                    <span class="skill-tag">CET-4 512分</span>
+                    <span class="skill-tag">CET-6 506分</span>
+                    <span class="skill-tag">读写熟练，可处理英文监管文件</span>
+                </div>
+            </div>
+
+            <div class="skill-card">
+                <h3>专业证书</h3>
+                <div class="skill-tags">
+                    <span class="skill-tag">基金从业资格（科目一）</span>
+                </div>
+            </div>
+
+            <div class="skill-card">
+                <h3>IT 技能</h3>
+                <div class="skill-tags">
+                    <span class="skill-tag">Python基础（Pandas数据清洗）</span>
+                    <span class="skill-tag">Excel/WPS高级应用</span>
+                    <span class="skill-tag">Power Query</span>
+                    <span class="skill-tag">动态数组</span>
+                    <span class="skill-tag">MySQL基础</span>
+                </div>
+            </div>
+
+            <div class="skill-card">
+                <h3>荣誉奖项</h3>
+                <div class="skill-tags">
+                    <span class="skill-tag">全国大学生创业大赛校级奖项</span>
+                    <span class="skill-tag">工行杯校级二等奖</span>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</section>
+
+<!-- 联系方式 -->
+<section id="contact" class="section">
+    <div class="section-inner">
+        <h2 class="section-title">联系方式</h2>
+        <div class="contact-grid">
+            <div class="contact-item">
+                <span class="contact-icon">📞</span>
+                <span>19732387158</span>
+            </div>
+            <div class="contact-item">
+                <span class="contact-icon">✉️</span>
+                <span>3264390558@qq.com</span>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Footer -->
+<footer class="footer">
+    © 2026 徐洪磊 · 江苏大学 · 国际经济与贸易
+</footer>
+
+<script>
+    const toggle = document.getElementById('navToggle');
+    const navLinks = document.getElementById('navLinks');
+    toggle.addEventListener('click', () => {
+        navLinks.classList.toggle('open');
+    });
+    // Close menu on link click (mobile)
+    navLinks.querySelectorAll('a').forEach(link => {
+        link.addEventListener('click', () => {
+            navLinks.classList.remove('open');
+        });
+    });
+</script>
+
+</body>
+</html>
