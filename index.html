@@ -1,663 +1,944 @@
 <!DOCTYPE html>
-<html lang="zh-CN">
+<html lang="zh-CN" data-theme="dark">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>徐洪磊 — 个人简历</title>
-    <style>
-        :root {
-            --primary: #1a365d;
-            --primary-light: #2b6cb0;
-            --accent: #3182ce;
-            --bg: #ffffff;
-            --bg-light: #f7fafc;
-            --text: #2d3748;
-            --text-light: #4a5568;
-            --border: #e2e8f0;
-            --shadow: 0 1px 3px rgba(0,0,0,0.08), 0 1px 2px rgba(0,0,0,0.06);
-            --shadow-md: 0 4px 6px rgba(0,0,0,0.07), 0 2px 4px rgba(0,0,0,0.06);
-            --radius: 8px;
-        }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>徐洪磊 — 个人简历</title>
+<style>
+/* ===== CSS Custom Properties ===== */
+:root {
+  --bg: #06060e;
+  --bg-secondary: #0c0c1a;
+  --surface: rgba(255,255,255,0.03);
+  --surface-hover: rgba(255,255,255,0.06);
+  --glass: rgba(15,15,35,0.6);
+  --glass-border: rgba(255,255,255,0.06);
+  --text: #e4e8f0;
+  --text-secondary: #8892a4;
+  --accent: #00c8ff;
+  --accent2: #7c3aed;
+  --accent-glow: rgba(0,200,255,0.15);
+  --card-shadow: 0 8px 32px rgba(0,0,0,0.4);
+  --nav-bg: rgba(6,6,14,0.85);
+  --radius: 16px;
+  --transition: 0.3s cubic-bezier(0.4,0,0.2,1);
+}
+[data-theme="light"] {
+  --bg: #f0f2f5;
+  --bg-secondary: #e8eaef;
+  --surface: rgba(0,0,0,0.03);
+  --surface-hover: rgba(0,0,0,0.06);
+  --glass: rgba(255,255,255,0.75);
+  --glass-border: rgba(0,0,0,0.08);
+  --text: #1a1d2e;
+  --text-secondary: #555a6e;
+  --accent: #0284c7;
+  --accent2: #6d28d9;
+  --accent-glow: rgba(2,132,199,0.1);
+  --card-shadow: 0 8px 32px rgba(0,0,0,0.08);
+  --nav-bg: rgba(240,242,245,0.85);
+}
 
-        * { margin: 0; padding: 0; box-sizing: border-box; }
+* { margin:0; padding:0; box-sizing:border-box; }
+html { scroll-behavior: auto; } /* GSAP handles scrolling */
+body {
+  font-family: "Inter", "PingFang SC", "Microsoft YaHei", -apple-system, sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  line-height: 1.7;
+  font-size: 15px;
+  overflow-x: hidden;
+  transition: background var(--transition), color var(--transition);
+  cursor: none;
+}
 
-        html { scroll-behavior: smooth; }
+/* ===== Custom Cursor ===== */
+.cursor { pointer-events:none; position:fixed; z-index:99999; }
+.cursor-dot {
+  width:6px; height:6px; background:var(--accent); border-radius:50%;
+  position:fixed; transform:translate(-50%,-50%); pointer-events:none; z-index:99999;
+  transition: width 0.2s, height 0.2s, background 0.2s;
+}
+.cursor-ring {
+  width:32px; height:32px; border:1.5px solid var(--accent); border-radius:50%;
+  position:fixed; transform:translate(-50%,-50%); pointer-events:none; z-index:99998;
+  transition: width 0.3s, height 0.3s, border-color 0.3s;
+}
+.cursor-ring.hover { width:48px; height:48px; border-color:var(--accent2); }
+.cursor-dot.hover { width:10px; height:10px; background:var(--accent2); }
 
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
-            color: var(--text);
-            background: var(--bg);
-            line-height: 1.7;
-            font-size: 15px;
-        }
+/* ===== 3D Canvas ===== */
+#bg-canvas { position:fixed; top:0; left:0; width:100%; height:100%; z-index:0; }
 
-        /* Navigation */
-        .nav {
-            position: fixed;
-            top: 0;
-            width: 100%;
-            background: rgba(255,255,255,0.95);
-            backdrop-filter: blur(10px);
-            border-bottom: 1px solid var(--border);
-            z-index: 1000;
-            padding: 0 24px;
-        }
-        .nav-inner {
-            max-width: 960px;
-            margin: 0 auto;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            height: 56px;
-        }
-        .nav-logo {
-            font-size: 18px;
-            font-weight: 700;
-            color: var(--primary);
-            letter-spacing: 0.5px;
-        }
-        .nav-links {
-            display: flex;
-            gap: 28px;
-            list-style: none;
-        }
-        .nav-links a {
-            text-decoration: none;
-            color: var(--text-light);
-            font-size: 14px;
-            font-weight: 500;
-            transition: color 0.2s;
-        }
-        .nav-links a:hover { color: var(--accent); }
+/* ===== Main Content ===== */
+.main-content { position:relative; z-index:1; }
 
-        .nav-toggle {
-            display: none;
-            background: none;
-            border: none;
-            font-size: 24px;
-            cursor: pointer;
-            color: var(--text);
-        }
+/* ===== Navigation ===== */
+.nav {
+  position:fixed; top:0; width:100%; z-index:1000;
+  background:var(--nav-bg); backdrop-filter:blur(20px) saturate(180%);
+  border-bottom:1px solid var(--glass-border);
+  transition: background var(--transition), border var(--transition);
+}
+.nav-inner {
+  max-width:1100px; margin:0 auto; display:flex; align-items:center;
+  justify-content:space-between; height:60px; padding:0 24px;
+}
+.nav-logo {
+  font-size:20px; font-weight:800; color:var(--text);
+  letter-spacing:1px; text-decoration:none;
+}
+.nav-logo span { color:var(--accent); }
+.nav-links { display:flex; gap:32px; list-style:none; }
+.nav-links a {
+  text-decoration:none; color:var(--text-secondary); font-size:13px;
+  font-weight:500; letter-spacing:0.5px; transition:color 0.2s;
+  text-transform:uppercase;
+}
+.nav-links a:hover, .nav-links a.active { color:var(--accent); }
 
-        /* Section */
-        .section {
-            padding: 80px 24px;
-        }
-        .section-alt {
-            background: var(--bg-light);
-        }
-        .section-inner {
-            max-width: 800px;
-            margin: 0 auto;
-        }
-        .section-title {
-            font-size: 26px;
-            font-weight: 700;
-            color: var(--primary);
-            margin-bottom: 36px;
-            display: flex;
-            align-items: center;
-            gap: 12px;
-        }
-        .section-title::after {
-            content: '';
-            flex: 1;
-            height: 1px;
-            background: var(--border);
-        }
+/* Theme Toggle */
+.theme-toggle {
+  width:44px; height:24px; border-radius:12px; border:none;
+  background:var(--surface); cursor:none; position:relative;
+  transition:background var(--transition); border:1px solid var(--glass-border);
+}
+.theme-toggle::after {
+  content:''; position:absolute; top:2px; left:2px;
+  width:18px; height:18px; border-radius:50%; background:var(--accent);
+  transition:transform 0.3s cubic-bezier(0.4,0,0.2,1);
+}
+[data-theme="light"] .theme-toggle::after { transform:translateX(20px); }
 
-        /* Hero */
-        .hero {
-            padding: 120px 24px 80px;
-            background: linear-gradient(135deg, #f0f4f8 0%, #e2e8f0 100%);
-        }
-        .hero-inner {
-            max-width: 800px;
-            margin: 0 auto;
-            display: flex;
-            align-items: center;
-            gap: 48px;
-        }
-        .hero-avatar {
-            width: 140px;
-            height: 140px;
-            border-radius: 50%;
-            background: white;
-            border: 4px solid white;
-            box-shadow: var(--shadow-md);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            flex-shrink: 0;
-            overflow: hidden;
-        }
-        .hero-avatar img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-        }
-        .hero-avatar-placeholder {
-            width: 100%;
-            height: 100%;
-            background: var(--bg-light);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: var(--text-light);
-            font-size: 13px;
-        }
-        .hero-text h1 {
-            font-size: 36px;
-            font-weight: 800;
-            color: var(--primary);
-            margin-bottom: 6px;
-        }
-        .hero-text .subtitle {
-            font-size: 17px;
-            color: var(--text-light);
-            margin-bottom: 16px;
-        }
-        .hero-tags {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 8px;
-        }
-        .hero-tag {
-            background: white;
-            color: var(--primary-light);
-            padding: 4px 14px;
-            border-radius: 20px;
-            font-size: 13px;
-            font-weight: 500;
-            border: 1px solid var(--border);
-        }
+/* ===== Sections ===== */
+.section { padding:100px 24px; position:relative; }
+.section-inner { max-width:900px; margin:0 auto; }
+.section-tag {
+  display:inline-block; font-size:11px; font-weight:700; letter-spacing:3px;
+  color:var(--accent); text-transform:uppercase; margin-bottom:16px;
+}
+.section-title {
+  font-size:42px; font-weight:800; margin-bottom:48px; line-height:1.2;
+  background:linear-gradient(135deg, var(--text) 0%, var(--accent) 100%);
+  -webkit-background-clip:text; -webkit-text-fill-color:transparent;
+  background-clip:text;
+}
 
-        /* Info Grid */
-        .info-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-            gap: 16px;
-        }
-        .info-item {
-            display: flex;
-            gap: 8px;
-            align-items: baseline;
-        }
-        .info-label {
-            color: var(--text-light);
-            font-size: 14px;
-            white-space: nowrap;
-        }
-        .info-value {
-            font-weight: 500;
-            color: var(--text);
-        }
+/* Glass Card */
+.glass-card {
+  background:var(--glass); border:1px solid var(--glass-border);
+  border-radius:var(--radius); padding:32px;
+  backdrop-filter:blur(20px) saturate(180%);
+  box-shadow:var(--card-shadow);
+  transition: transform 0.3s, box-shadow 0.3s, background var(--transition);
+}
+.glass-card:hover {
+  transform:translateY(-4px);
+  box-shadow:0 16px 48px rgba(0,0,0,0.5);
+}
 
-        /* Timeline */
-        .timeline { position: relative; }
-        .timeline::before {
-            content: '';
-            position: absolute;
-            left: 0;
-            top: 0;
-            bottom: 0;
-            width: 2px;
-            background: var(--border);
-        }
-        .timeline-item {
-            position: relative;
-            padding-left: 28px;
-            margin-bottom: 36px;
-        }
-        .timeline-item:last-child { margin-bottom: 0; }
-        .timeline-item::before {
-            content: '';
-            position: absolute;
-            left: -4px;
-            top: 6px;
-            width: 10px;
-            height: 10px;
-            border-radius: 50%;
-            background: var(--accent);
-            border: 2px solid white;
-            box-shadow: 0 0 0 2px var(--accent);
-        }
-        .timeline-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: baseline;
-            flex-wrap: wrap;
-            gap: 8px;
-            margin-bottom: 4px;
-        }
-        .timeline-title {
-            font-weight: 700;
-            font-size: 17px;
-            color: var(--primary);
-        }
-        .timeline-date {
-            font-size: 13px;
-            color: var(--text-light);
-            background: var(--bg-light);
-            padding: 2px 12px;
-            border-radius: 12px;
-            white-space: nowrap;
-        }
-        .timeline-subtitle {
-            font-size: 14px;
-            color: var(--text-light);
-            margin-bottom: 10px;
-        }
-        .timeline-list {
-            list-style: none;
-            font-size: 14px;
-            color: var(--text);
-        }
-        .timeline-list li {
-            position: relative;
-            padding-left: 16px;
-            margin-bottom: 6px;
-        }
-        .timeline-list li::before {
-            content: '•';
-            position: absolute;
-            left: 0;
-            color: var(--accent);
-        }
+/* ===== Hero ===== */
+.hero {
+  min-height:100vh; display:flex; align-items:center; justify-content:center;
+  text-align:center; position:relative;
+}
+.hero-inner { position:relative; z-index:2; }
+.hero-greeting {
+  font-size:14px; letter-spacing:3px; text-transform:uppercase;
+  color:var(--accent); margin-bottom:20px; font-weight:600;
+}
+.hero-name {
+  font-size:72px; font-weight:900; line-height:1.1; margin-bottom:16px;
+  background:linear-gradient(135deg, var(--text) 20%, var(--accent) 60%, var(--accent2) 100%);
+  -webkit-background-clip:text; -webkit-text-fill-color:transparent;
+  background-clip:text;
+}
+.hero-subtitle {
+  font-size:20px; color:var(--text-secondary); margin-bottom:32px;
+  font-weight:400;
+}
+.hero-typing {
+  font-size:18px; color:var(--accent); font-weight:500; min-height:28px;
+}
+.hero-typing .cursor-blink {
+  display:inline-block; width:2px; height:20px; background:var(--accent);
+  margin-left:2px; animation:blink 1s step-end infinite; vertical-align:text-bottom;
+}
+@keyframes blink { 50% { opacity:0; } }
 
-        /* Skills */
-        .skills-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
-            gap: 24px;
-        }
-        .skill-card {
-            background: white;
-            border: 1px solid var(--border);
-            border-radius: var(--radius);
-            padding: 24px;
-        }
-        .skill-card h3 {
-            font-size: 15px;
-            font-weight: 700;
-            color: var(--primary);
-            margin-bottom: 12px;
-        }
-        .skill-tags {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 6px;
-        }
-        .skill-tag {
-            background: var(--bg-light);
-            color: var(--text);
-            padding: 4px 12px;
-            border-radius: 4px;
-            font-size: 13px;
-            border: 1px solid var(--border);
-        }
+.scroll-indicator {
+  position:absolute; bottom:40px; left:50%; transform:translateX(-50%);
+  display:flex; flex-direction:column; align-items:center; gap:8px;
+  opacity:0.6; animation:float 2s ease-in-out infinite;
+}
+.scroll-indicator span { font-size:10px; letter-spacing:2px; text-transform:uppercase; color:var(--text-secondary); }
+.scroll-indicator .arrow { width:20px; height:20px; border-right:2px solid var(--accent); border-bottom:2px solid var(--accent); transform:rotate(45deg); }
+@keyframes float { 0%,100% { transform:translateX(-50%) translateY(0); } 50% { transform:translateX(-50%) translateY(8px); } }
 
-        /* Project Cards */
-        .project-card {
-            background: white;
-            border: 1px solid var(--border);
-            border-radius: var(--radius);
-            padding: 24px;
-            margin-bottom: 16px;
-        }
-        .project-card:last-child { margin-bottom: 0; }
-        .project-card h3 {
-            font-size: 16px;
-            font-weight: 700;
-            color: var(--primary);
-            margin-bottom: 8px;
-        }
-        .project-card p {
-            font-size: 14px;
-            color: var(--text-light);
-        }
-        .badge {
-            display: inline-block;
-            background: #ebf4ff;
-            color: var(--accent);
-            padding: 2px 10px;
-            border-radius: 4px;
-            font-size: 12px;
-            font-weight: 600;
-            margin-bottom: 8px;
-        }
+/* ===== Info Grid ===== */
+.info-grid {
+  display:grid; grid-template-columns:repeat(auto-fill, minmax(220px, 1fr));
+  gap:20px;
+}
+.info-item { display:flex; flex-direction:column; gap:4px; }
+.info-label { font-size:12px; text-transform:uppercase; letter-spacing:1px; color:var(--accent); font-weight:600; }
+.info-value { font-size:16px; font-weight:600; }
 
-        /* Contact */
-        .contact-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
-            gap: 16px;
-        }
-        .contact-item {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            padding: 16px;
-            background: white;
-            border: 1px solid var(--border);
-            border-radius: var(--radius);
-            font-size: 14px;
-            color: var(--text);
-        }
-        .contact-icon {
-            font-size: 20px;
-            flex-shrink: 0;
-        }
+/* ===== Timeline ===== */
+.timeline { position:relative; padding-left:32px; }
+.timeline::before {
+  content:''; position:absolute; left:7px; top:0; bottom:0;
+  width:1.5px; background:linear-gradient(to bottom, var(--accent), var(--accent2), var(--accent));
+}
+.timeline-item { position:relative; margin-bottom:40px; }
+.timeline-item:last-child { margin-bottom:0; }
+.timeline-dot {
+  position:absolute; left:-29px; top:4px;
+  width:14px; height:14px; border-radius:50%; background:var(--accent);
+  box-shadow:0 0 16px var(--accent-glow); z-index:1;
+}
+.timeline-meta { display:flex; justify-content:space-between; align-items:baseline; flex-wrap:wrap; gap:8px; margin-bottom:6px; }
+.timeline-title { font-size:18px; font-weight:700; }
+.timeline-date {
+  font-size:12px; font-weight:600; letter-spacing:0.5px;
+  color:var(--accent); background:var(--accent-glow);
+  padding:3px 12px; border-radius:20px; white-space:nowrap;
+}
+.timeline-subtitle { font-size:14px; color:var(--text-secondary); margin-bottom:12px; }
+.timeline-list { list-style:none; }
+.timeline-list li {
+  position:relative; padding-left:18px; margin-bottom:8px;
+  font-size:14px; color:var(--text-secondary); line-height:1.6;
+}
+.timeline-list li::before {
+  content:''; position:absolute; left:0; top:9px;
+  width:5px; height:5px; border-radius:50%; background:var(--accent);
+}
 
-        /* Footer */
-        .footer {
-            text-align: center;
-            padding: 32px 24px;
-            font-size: 13px;
-            color: var(--text-light);
-            border-top: 1px solid var(--border);
-        }
+/* ===== Skills ===== */
+.skills-container { display:flex; gap:40px; align-items:flex-start; flex-wrap:wrap; }
+.skills-cards { flex:1; min-width:280px; display:flex; flex-direction:column; gap:16px; }
+.skill-card h4 { font-size:14px; font-weight:700; margin-bottom:12px; color:var(--text); }
+.skill-tags { display:flex; flex-wrap:wrap; gap:8px; }
+.skill-tag {
+  padding:5px 14px; border-radius:20px; font-size:13px; font-weight:500;
+  background:var(--surface); border:1px solid var(--glass-border);
+  transition:all 0.2s;
+}
+.skill-tag:hover { border-color:var(--accent); color:var(--accent); background:var(--accent-glow); }
+.radar-container { flex:0 0 340px; display:flex; justify-content:center; }
+#radar-canvas { width:100%; max-width:340px; }
 
-        /* Job target banner */
-        .target-banner {
-            background: var(--primary);
-            color: white;
-            padding: 20px 24px;
-            border-radius: var(--radius);
-            text-align: center;
-            font-size: 16px;
-            font-weight: 500;
-            line-height: 1.6;
-        }
+/* ===== Project Cards ===== */
+.projects-grid { display:grid; grid-template-columns:repeat(auto-fill, minmax(360px, 1fr)); gap:20px; }
+.project-number { font-size:48px; font-weight:900; color:var(--accent); opacity:0.2; line-height:1; }
+.project-card h3 { font-size:18px; font-weight:700; margin:8px 0; }
+.project-card p { font-size:14px; color:var(--text-secondary); }
+.project-card .badge { display:inline-block; padding:3px 10px; border-radius:4px; font-size:11px; font-weight:700; letter-spacing:1px; text-transform:uppercase; background:var(--accent-glow); color:var(--accent); margin-bottom:12px; }
 
-        /* Mobile */
-        @media (max-width: 768px) {
-            .hero-inner {
-                flex-direction: column;
-                text-align: center;
-                gap: 24px;
-            }
-            .hero-avatar {
-                width: 110px;
-                height: 110px;
-            }
-            .hero-text h1 { font-size: 28px; }
-            .nav-links { display: none; }
-            .nav-links.open {
-                display: flex;
-                flex-direction: column;
-                position: absolute;
-                top: 56px;
-                left: 0;
-                right: 0;
-                background: white;
-                border-bottom: 1px solid var(--border);
-                padding: 16px 24px;
-                gap: 12px;
-            }
-            .nav-toggle { display: block; }
-            .timeline-header { flex-direction: column; }
-            .skills-grid { grid-template-columns: 1fr; }
-            .info-grid { grid-template-columns: 1fr 1fr; }
-            .section { padding: 56px 16px; }
-            .hero { padding: 100px 16px 60px; }
-        }
+/* ===== Contact ===== */
+.contact-grid { display:grid; grid-template-columns:repeat(auto-fill, minmax(200px, 1fr)); gap:16px; }
+.contact-item {
+  display:flex; align-items:center; gap:12px; padding:20px;
+  background:var(--glass); border:1px solid var(--glass-border);
+  border-radius:var(--radius); backdrop-filter:blur(20px);
+  transition:all 0.3s;
+}
+.contact-item:hover { border-color:var(--accent); }
+.contact-icon { font-size:22px; }
+.contact-text { font-size:15px; font-weight:500; }
 
-        @media (max-width: 480px) {
-            .info-grid { grid-template-columns: 1fr; }
-            .contact-grid { grid-template-columns: 1fr; }
-        }
-    </style>
+/* ===== Target Banner ===== */
+.target-banner {
+  background:linear-gradient(135deg, var(--accent-glow), rgba(124,58,237,0.1));
+  border:1px solid var(--accent); border-radius:var(--radius); padding:24px 32px;
+  text-align:center; font-size:16px; font-weight:600; color:var(--text);
+  backdrop-filter:blur(20px);
+}
+
+/* ===== Footer ===== */
+.footer { text-align:center; padding:40px 24px; font-size:13px; color:var(--text-secondary); border-top:1px solid var(--glass-border); }
+
+/* ===== Responsive ===== */
+@media (max-width:768px) {
+  .hero-name { font-size:42px; }
+  .section-title { font-size:32px; }
+  .section { padding:60px 16px; }
+  .skills-container { flex-direction:column; }
+  .radar-container { flex:1; width:100%; }
+  .nav-links { display:none; }
+  .projects-grid { grid-template-columns:1fr; }
+  .timeline-meta { flex-direction:column; }
+}
+
+/* Reveal animation (controlled by GSAP) */
+.reveal { opacity:0; transform:translateY(40px); }
+</style>
 </head>
 <body>
 
+<!-- Custom Cursor -->
+<div class="cursor-dot" id="cursorDot"></div>
+<div class="cursor-ring" id="cursorRing"></div>
+
+<!-- 3D Background -->
+<canvas id="bg-canvas"></canvas>
+
+<div class="main-content">
+
 <!-- Navigation -->
-<nav class="nav">
-    <div class="nav-inner">
-        <a href="#" class="nav-logo">XU Honglei</a>
-        <button class="nav-toggle" id="navToggle" aria-label="菜单">☰</button>
-        <ul class="nav-links" id="navLinks">
-            <li><a href="#about">关于我</a></li>
-            <li><a href="#education">教育背景</a></li>
-            <li><a href="#experience">实习经历</a></li>
-            <li><a href="#projects">项目经历</a></li>
-            <li><a href="#skills">技能证书</a></li>
-            <li><a href="#contact">联系方式</a></li>
-        </ul>
-    </div>
+<nav class="nav" id="navbar">
+  <div class="nav-inner">
+    <a href="#" class="nav-logo">XU<span>.</span>HL</a>
+    <ul class="nav-links">
+      <li><a href="#about" class="nav-link">About</a></li>
+      <li><a href="#education" class="nav-link">Education</a></li>
+      <li><a href="#experience" class="nav-link">Experience</a></li>
+      <li><a href="#skills" class="nav-link">Skills</a></li>
+      <li><a href="#contact" class="nav-link">Contact</a></li>
+    </ul>
+    <button class="theme-toggle" id="themeToggle" aria-label="Toggle theme"></button>
+  </div>
 </nav>
 
 <!-- Hero -->
-<header class="hero">
-    <div class="hero-inner">
-        <div class="hero-avatar">
-            <div class="hero-avatar-placeholder">替换为<br>你的照片</div>
-        </div>
-        <div class="hero-text">
-            <h1>徐洪磊</h1>
-            <p class="subtitle">江苏大学 · 国际经济与贸易（本科在读）</p>
-            <div class="hero-tags">
-                <span class="hero-tag">合规风控</span>
-                <span class="hero-tag">反洗钱</span>
-                <span class="hero-tag">数据分析</span>
-                <span class="hero-tag">信贷管理</span>
-            </div>
-        </div>
-    </div>
-</header>
-
-<!-- 求职意向 -->
-<section class="section">
-    <div class="section-inner">
-        <div class="target-banner">
-            <strong>求职意向：</strong>银行 / 券商 / 消费金融 / 支付公司  ·  合规、风控、反洗钱、运营、法律事务实习生
-        </div>
-    </div>
+<section class="hero">
+  <div class="hero-inner">
+    <p class="hero-greeting reveal">Hello, I'm</p>
+    <h1 class="hero-name reveal">徐洪磊</h1>
+    <p class="hero-subtitle reveal">江苏大学 · 国际经济与贸易 · 本科在读</p>
+    <div class="hero-typing reveal"><span id="typingText"></span><span class="cursor-blink"></span></div>
+  </div>
+  <div class="scroll-indicator">
+    <span>Scroll</span>
+    <div class="arrow"></div>
+  </div>
 </section>
 
-<!-- 关于我 -->
-<section id="about" class="section section-alt">
-    <div class="section-inner">
-        <h2 class="section-title">基本信息</h2>
-        <div class="info-grid">
-            <div class="info-item">
-                <span class="info-label">姓名</span>
-                <span class="info-value">徐洪磊</span>
-            </div>
-            <div class="info-item">
-                <span class="info-label">民族</span>
-                <span class="info-value">汉族</span>
-            </div>
-            <div class="info-item">
-                <span class="info-label">出生年月</span>
-                <span class="info-value">2006.05</span>
-            </div>
-            <div class="info-item">
-                <span class="info-label">身高</span>
-                <span class="info-value">181 cm</span>
-            </div>
-            <div class="info-item">
-                <span class="info-label">政治面貌</span>
-                <span class="info-value">中国共青团团员</span>
-            </div>
-            <div class="info-item">
-                <span class="info-label">就读院校</span>
-                <span class="info-value">江苏大学</span>
-            </div>
-        </div>
+<!-- Target -->
+<section class="section" style="padding-top:0;">
+  <div class="section-inner">
+    <div class="target-banner reveal">
+      求职意向：银行 / 券商 / 消费金融 / 支付公司 &nbsp;·&nbsp; 合规、风控、反洗钱实习生
     </div>
+  </div>
 </section>
 
-<!-- 教育背景 -->
+<!-- About -->
+<section id="about" class="section">
+  <div class="section-inner">
+    <p class="section-tag reveal">01. About</p>
+    <h2 class="section-title reveal">基本信息</h2>
+    <div class="glass-card reveal">
+      <div class="info-grid">
+        <div class="info-item"><span class="info-label">姓名</span><span class="info-value">徐洪磊</span></div>
+        <div class="info-item"><span class="info-label">民族</span><span class="info-value">汉族</span></div>
+        <div class="info-item"><span class="info-label">出生年月</span><span class="info-value">2006.05</span></div>
+        <div class="info-item"><span class="info-label">身高</span><span class="info-value">181 cm</span></div>
+        <div class="info-item"><span class="info-label">政治面貌</span><span class="info-value">中国共青团团员</span></div>
+        <div class="info-item"><span class="info-label">就读院校</span><span class="info-value">江苏大学</span></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Education -->
 <section id="education" class="section">
-    <div class="section-inner">
-        <h2 class="section-title">教育背景</h2>
-        <div class="timeline">
-            <div class="timeline-item">
-                <div class="timeline-header">
-                    <span class="timeline-title">江苏大学</span>
-                    <span class="timeline-date">2024.09 — 至今</span>
-                </div>
-                <p class="timeline-subtitle" style="margin-bottom:12px;">国际经济与贸易（本科）</p>
-                <p style="font-size:14px;color:var(--text-light);">
-                    主修课程：货币金融学、金融风险管理、宏观/微观经济学、国际金融、统计学、概率论与数理统计、Python数据分析、财务管理、财政学等
-                </p>
-            </div>
+  <div class="section-inner">
+    <p class="section-tag reveal">02. Education</p>
+    <h2 class="section-title reveal">教育背景</h2>
+    <div class="glass-card reveal">
+      <div class="timeline">
+        <div class="timeline-item">
+          <div class="timeline-dot"></div>
+          <div class="timeline-meta">
+            <span class="timeline-title">江苏大学</span>
+            <span class="timeline-date">2024.09 — 至今</span>
+          </div>
+          <p class="timeline-subtitle">国际经济与贸易（本科）</p>
+          <p style="font-size:14px;color:var(--text-secondary);">主修课程：货币金融学、金融风险管理、宏观/微观经济学、国际金融、统计学、概率论与数理统计、Python数据分析、财务管理、财政学等</p>
         </div>
+      </div>
     </div>
+  </div>
 </section>
 
-<!-- 实习经历 -->
-<section id="experience" class="section section-alt">
-    <div class="section-inner">
-        <h2 class="section-title">实习经历</h2>
-        <div class="timeline">
+<!-- Experience -->
+<section id="experience" class="section">
+  <div class="section-inner">
+    <p class="section-tag reveal">03. Experience</p>
+    <h2 class="section-title reveal">实习经历</h2>
+    <div class="glass-card reveal">
+      <div class="timeline">
 
-            <div class="timeline-item">
-                <div class="timeline-header">
-                    <span class="timeline-title">永丰银行（中国）总行</span>
-                    <span class="timeline-date">2025.11 — 2026.04</span>
-                </div>
-                <p class="timeline-subtitle">永丰金融控股股份有限公司 · 信贷管理部 · 中后台实习生</p>
-                <ul class="timeline-list">
-                    <li>尽调分析：深度参与4家消费金融公司的尽调报告撰写，覆盖股东背景、资产质量等模块，用于评审上会</li>
-                    <li>贷后管理：完成6家担保公司贷后复审报告，定期追踪代偿率、担保放大倍数等风险指标，协助预警异常情况</li>
-                    <li>财务分析：解析合作方财务报表（资产负债表、利润表等），计算关键财务比率，辅助判断担保能力及经营情况</li>
-                    <li>监管响应：累计撰写60+份金监局监管转办案件处理结果报告，确保内容合规、反馈及时，锻炼公文写作能力</li>
-                </ul>
-            </div>
-
-            <div class="timeline-item">
-                <div class="timeline-header">
-                    <span class="timeline-title">上海仙舍生物科技有限公司</span>
-                    <span class="timeline-date">2025.07 — 2025.09</span>
-                </div>
-                <p class="timeline-subtitle">Goodchem Technology Co., Limited · 销售部国际业务部 · 外贸合规与数据分析实习生</p>
-                <ul class="timeline-list">
-                    <li>负责东欧市场200+潜在客户背景调查，建立客户风险清单与信用档案</li>
-                    <li>使用Excel高级函数（VLOOKUP、数据透视表等）进行客户信用评估与竞争分析</li>
-                    <li>参与B2B平台产品信息维护，确保符合欧盟REACH法规及中国海关合规要求</li>
-                    <li>协助国际样品寄送海关申报与外汇管制材料准备，了解外贸合规实务</li>
-                </ul>
-            </div>
-
-            <div class="timeline-item">
-                <div class="timeline-header">
-                    <span class="timeline-title">中信证券江苏分公司</span>
-                    <span class="timeline-date">2025.01 — 2025.03</span>
-                </div>
-                <p class="timeline-subtitle">财富管理实习生</p>
-                <ul class="timeline-list">
-                    <li>在部门导师一对一带教下，学习投资者适当性管理、KYC与反洗钱客户身份识别流程</li>
-                    <li>参与每日晨会与合规培训，记录监管动态与市场风险要点</li>
-                    <li>协助使用CRM系统进行客户信息录入与更新，学习投资者教育与产品风险匹配实务</li>
-                    <li>支持投资者教育活动前期准备与现场执行，初步了解券商合规风控日常</li>
-                </ul>
-            </div>
-
+        <div class="timeline-item">
+          <div class="timeline-dot"></div>
+          <div class="timeline-meta">
+            <span class="timeline-title">永丰银行（中国）总行</span>
+            <span class="timeline-date">2025.11 — 2026.04</span>
+          </div>
+          <p class="timeline-subtitle">永丰金融控股股份有限公司 · 信贷管理部 · 中后台实习生</p>
+          <ul class="timeline-list">
+            <li>尽调分析：深度参与4家消费金融公司的尽调报告撰写，覆盖股东背景、资产质量等模块，用于评审上会</li>
+            <li>贷后管理：完成6家担保公司贷后复审报告，定期追踪代偿率、担保放大倍数等风险指标，协助预警异常情况</li>
+            <li>财务分析：解析合作方财务报表（资产负债表、利润表等），计算关键财务比率，辅助判断担保能力及经营情况</li>
+            <li>监管响应：累计撰写60+份金监局监管转办案件处理结果报告，确保内容合规、反馈及时</li>
+          </ul>
         </div>
+
+        <div class="timeline-item">
+          <div class="timeline-dot" style="background:var(--accent2); box-shadow:0 0 16px rgba(124,58,237,0.3);"></div>
+          <div class="timeline-meta">
+            <span class="timeline-title">上海仙舍生物科技有限公司</span>
+            <span class="timeline-date">2025.07 — 2025.09</span>
+          </div>
+          <p class="timeline-subtitle">Goodchem Technology · 国际业务部 · 外贸合规与数据分析实习生</p>
+          <ul class="timeline-list">
+            <li>负责东欧市场200+潜在客户背景调查，建立客户风险清单与信用档案</li>
+            <li>使用Excel高级函数（VLOOKUP、数据透视表等）进行客户信用评估与竞争分析</li>
+            <li>参与B2B平台产品信息维护，确保符合欧盟REACH法规及中国海关合规要求</li>
+            <li>协助国际样品寄送海关申报与外汇管制材料准备，了解外贸合规实务</li>
+          </ul>
+        </div>
+
+        <div class="timeline-item">
+          <div class="timeline-dot" style="background:var(--accent2); box-shadow:0 0 16px rgba(124,58,237,0.3);"></div>
+          <div class="timeline-meta">
+            <span class="timeline-title">中信证券江苏分公司</span>
+            <span class="timeline-date">2025.01 — 2025.03</span>
+          </div>
+          <p class="timeline-subtitle">财富管理实习生</p>
+          <ul class="timeline-list">
+            <li>在部门导师一对一带教下，学习投资者适当性管理、KYC与反洗钱客户身份识别流程</li>
+            <li>参与每日晨会与合规培训，记录监管动态与市场风险要点</li>
+            <li>协助使用CRM系统进行客户信息录入与更新，学习投资者教育与产品风险匹配实务</li>
+            <li>支持投资者教育活动前期准备与现场执行，初步了解券商合规风控日常</li>
+          </ul>
+        </div>
+
+      </div>
     </div>
+  </div>
 </section>
 
-<!-- 校园项目经历 -->
+<!-- Projects -->
 <section id="projects" class="section">
-    <div class="section-inner">
-        <h2 class="section-title">校园项目经历</h2>
-
-        <div class="project-card">
-            <span class="badge">A+ 小组项目</span>
-            <h3>商业银行操作风险案例分析</h3>
-            <p>基于银保监会管理办法，分析股份行员工舞弊案例并提出防控建议 — 货币金融学课程项目</p>
-        </div>
-
-        <div class="project-card">
-            <span class="badge">Python + Excel</span>
-            <h3>国际贸易客户风险评分模型</h3>
-            <p>使用 Pandas 清洗模拟交易数据，构建简易高风险客户标记规则</p>
-        </div>
+  <div class="section-inner">
+    <p class="section-tag reveal">04. Projects</p>
+    <h2 class="section-title reveal">校园项目经历</h2>
+    <div class="projects-grid">
+      <div class="glass-card project-card reveal">
+        <div class="project-number">01</div>
+        <span class="badge">A+ 小组项目</span>
+        <h3>商业银行操作风险案例分析</h3>
+        <p>基于银保监会管理办法，分析股份行员工舞弊案例并提出防控建议 — 货币金融学课程项目</p>
+      </div>
+      <div class="glass-card project-card reveal">
+        <div class="project-number">02</div>
+        <span class="badge">Python + Excel</span>
+        <h3>国际贸易客户风险评分模型</h3>
+        <p>使用 Pandas 清洗模拟交易数据，构建简易高风险客户标记规则</p>
+      </div>
     </div>
+  </div>
 </section>
 
-<!-- 技能与证书 -->
-<section id="skills" class="section section-alt">
-    <div class="section-inner">
-        <h2 class="section-title">技能与证书</h2>
-        <div class="skills-grid">
-
-            <div class="skill-card">
-                <h3>语言能力</h3>
-                <div class="skill-tags">
-                    <span class="skill-tag">CET-4 512分</span>
-                    <span class="skill-tag">CET-6 506分</span>
-                    <span class="skill-tag">读写熟练，可处理英文监管文件</span>
-                </div>
-            </div>
-
-            <div class="skill-card">
-                <h3>专业证书</h3>
-                <div class="skill-tags">
-                    <span class="skill-tag">基金从业资格（科目一）</span>
-                </div>
-            </div>
-
-            <div class="skill-card">
-                <h3>IT 技能</h3>
-                <div class="skill-tags">
-                    <span class="skill-tag">Python基础（Pandas数据清洗）</span>
-                    <span class="skill-tag">Excel/WPS高级应用</span>
-                    <span class="skill-tag">Power Query</span>
-                    <span class="skill-tag">动态数组</span>
-                    <span class="skill-tag">MySQL基础</span>
-                </div>
-            </div>
-
-            <div class="skill-card">
-                <h3>荣誉奖项</h3>
-                <div class="skill-tags">
-                    <span class="skill-tag">全国大学生创业大赛校级奖项</span>
-                    <span class="skill-tag">工行杯校级二等奖</span>
-                </div>
-            </div>
-
+<!-- Skills -->
+<section id="skills" class="section">
+  <div class="section-inner">
+    <p class="section-tag reveal">05. Skills</p>
+    <h2 class="section-title reveal">技能与证书</h2>
+    <div class="skills-container">
+      <div class="skills-cards reveal">
+        <div class="glass-card skill-card">
+          <h4>语言能力</h4>
+          <div class="skill-tags">
+            <span class="skill-tag">CET-4 512分</span><span class="skill-tag">CET-6 506分</span><span class="skill-tag">读写熟练，可处理英文监管文件</span>
+          </div>
         </div>
+        <div class="glass-card skill-card">
+          <h4>专业证书</h4>
+          <div class="skill-tags">
+            <span class="skill-tag">基金从业资格（科目一）</span>
+          </div>
+        </div>
+        <div class="glass-card skill-card">
+          <h4>IT 技能</h4>
+          <div class="skill-tags">
+            <span class="skill-tag">Python基础（Pandas数据清洗）</span><span class="skill-tag">Excel/WPS高级应用</span><span class="skill-tag">Power Query</span><span class="skill-tag">动态数组</span><span class="skill-tag">MySQL基础</span>
+          </div>
+        </div>
+        <div class="glass-card skill-card">
+          <h4>荣誉奖项</h4>
+          <div class="skill-tags">
+            <span class="skill-tag">全国大学生创业大赛校级奖项</span><span class="skill-tag">工行杯校级二等奖</span>
+          </div>
+        </div>
+      </div>
+      <div class="radar-container reveal">
+        <canvas id="radar-canvas" width="340" height="340"></canvas>
+      </div>
     </div>
+  </div>
 </section>
 
-<!-- 联系方式 -->
+<!-- Contact -->
 <section id="contact" class="section">
-    <div class="section-inner">
-        <h2 class="section-title">联系方式</h2>
-        <div class="contact-grid">
-            <div class="contact-item">
-                <span class="contact-icon">📞</span>
-                <span>19732387158</span>
-            </div>
-            <div class="contact-item">
-                <span class="contact-icon">✉️</span>
-                <span>3264390558@qq.com</span>
-            </div>
-        </div>
+  <div class="section-inner">
+    <p class="section-tag reveal">06. Contact</p>
+    <h2 class="section-title reveal">联系方式</h2>
+    <div class="contact-grid">
+      <div class="contact-item reveal"><span class="contact-icon">📞</span><span class="contact-text">19732387158</span></div>
+      <div class="contact-item reveal"><span class="contact-icon">✉️</span><span class="contact-text">3264390558@qq.com</span></div>
+      <div class="contact-item reveal"><span class="contact-icon">🌐</span><span class="contact-text">dtardisblue.github.io/resume</span></div>
     </div>
+  </div>
 </section>
 
-<!-- Footer -->
-<footer class="footer">
-    © 2026 徐洪磊 · 江苏大学 · 国际经济与贸易
-</footer>
+<footer class="footer">© 2026 徐洪磊 · 江苏大学 · Powered by Three.js + GSAP</footer>
 
-<script>
-    const toggle = document.getElementById('navToggle');
-    const navLinks = document.getElementById('navLinks');
-    toggle.addEventListener('click', () => {
-        navLinks.classList.toggle('open');
-    });
-    // Close menu on link click (mobile)
-    navLinks.querySelectorAll('a').forEach(link => {
-        link.addEventListener('click', () => {
-            navLinks.classList.remove('open');
-        });
-    });
+</div><!-- .main-content -->
+
+<!-- GSAP -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js">
+</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js">
 </script>
 
+<!-- Three.js Import Map -->
+<script type="importmap">
+{
+  "imports": {
+    "three": "https://cdn.jsdelivr.net/npm/three@0.157.0/build/three.module.js"
+  }
+}
+</script>
+
+<script type="module">
+import * as THREE from 'three';
+
+// ==================== THREE.JS 3D BACKGROUND ====================
+const canvas = document.getElementById('bg-canvas');
+const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true });
+renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+renderer.setSize(window.innerWidth, window.innerHeight);
+
+const scene = new THREE.Scene();
+const camera = new THREE.PerspectiveCamera(60, window.innerWidth/window.innerHeight, 0.1, 100);
+camera.position.z = 30;
+
+// Ambient particles
+const particlesGeo = new THREE.BufferGeometry();
+const particlesCount = 800;
+const positions = new Float32Array(particlesCount * 3);
+const speeds = new Float32Array(particlesCount);
+for (let i = 0; i < particlesCount; i++) {
+  positions[i*3] = (Math.random() - 0.5) * 60;
+  positions[i*3+1] = (Math.random() - 0.5) * 40;
+  positions[i*3+2] = (Math.random() - 0.5) * 30;
+  speeds[i] = 0.002 + Math.random() * 0.008;
+}
+particlesGeo.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+const particlesMat = new THREE.PointsMaterial({
+  color: 0x00c8ff,
+  size: 0.04,
+  transparent: true,
+  opacity: 0.6,
+  blending: THREE.AdditiveBlending,
+  depthWrite: false
+});
+const particles = new THREE.Points(particlesGeo, particlesMat);
+scene.add(particles);
+
+// Central wireframe torus knot
+const knotGeo = new THREE.TorusKnotGeometry(4, 1.2, 128, 16);
+const knotMat = new THREE.MeshBasicMaterial({
+  color: 0x00c8ff,
+  wireframe: true,
+  transparent: true,
+  opacity: 0.08,
+  depthWrite: false
+});
+const knot = new THREE.Mesh(knotGeo, knotMat);
+scene.add(knot);
+
+// Secondary shape - icosahedron wireframe
+const icoGeo = new THREE.IcosahedronGeometry(6, 2);
+const icoMat = new THREE.MeshBasicMaterial({
+  color: 0x7c3aed,
+  wireframe: true,
+  transparent: true,
+  opacity: 0.05,
+  depthWrite: false
+});
+const ico = new THREE.Mesh(icoGeo, icoMat);
+ico.position.set(10, -4, -5);
+scene.add(ico);
+
+// Small orbiting spheres
+const orbs = [];
+for (let i = 0; i < 5; i++) {
+  const orbGeo = new THREE.SphereGeometry(0.15, 16, 16);
+  const orbMat = new THREE.MeshBasicMaterial({ color: 0x00c8ff, transparent: true, opacity: 0.5, depthWrite: false });
+  const orb = new THREE.Mesh(orbGeo, orbMat);
+  orb.userData = {
+    angle: Math.random() * Math.PI * 2,
+    radius: 7 + Math.random() * 3,
+    speed: 0.003 + Math.random() * 0.005,
+    yOffset: (Math.random() - 0.5) * 4,
+    phase: Math.random() * Math.PI * 2
+  };
+  scene.add(orb);
+  orbs.push(orb);
+}
+
+// Mouse tracking
+let mouseX = 0, mouseY = 0, targetMouseX = 0, targetMouseY = 0;
+
+window.addEventListener('mousemove', (e) => {
+  targetMouseX = (e.clientX / window.innerWidth) * 2 - 1;
+  targetMouseY = -(e.clientY / window.innerHeight) * 2 + 1;
+});
+
+// Animation loop
+function animate() {
+  requestAnimationFrame(animate);
+
+  // Smooth mouse follow
+  mouseX += (targetMouseX - mouseX) * 0.05;
+  mouseY += (targetMouseY - mouseY) * 0.05;
+
+  // Rotate main knot
+  knot.rotation.x += 0.002;
+  knot.rotation.y += 0.003;
+  knot.position.x += (mouseX * 2 - knot.position.x) * 0.02;
+  knot.position.y += (mouseY * 1.5 - knot.position.y) * 0.02;
+
+  // Rotate icosahedron
+  ico.rotation.x += 0.001;
+  ico.rotation.z += 0.002;
+
+  // Animate particles
+  const posArr = particles.geometry.attributes.position.array;
+  for (let i = 0; i < particlesCount; i++) {
+    posArr[i*3+1] += speeds[i];
+    if (posArr[i*3+1] > 20) posArr[i*3+1] = -20;
+    if (posArr[i*3+1] < -20) posArr[i*3+1] = 20;
+  }
+  particles.geometry.attributes.position.needsUpdate = true;
+  particles.rotation.y += 0.0003;
+
+  // Animate orbs
+  orbs.forEach(orb => {
+    orb.userData.angle += orb.userData.speed;
+    orb.position.x = Math.cos(orb.userData.angle) * orb.userData.radius;
+    orb.position.z = Math.sin(orb.userData.angle) * orb.userData.radius;
+    orb.position.y = Math.sin(orb.userData.angle * 2 + orb.userData.phase) * orb.userData.yOffset;
+  });
+
+  renderer.render(scene, camera);
+}
+animate();
+
+// Resize handler
+window.addEventListener('resize', () => {
+  camera.aspect = window.innerWidth / window.innerHeight;
+  camera.updateProjectionMatrix();
+  renderer.setSize(window.innerWidth, window.innerHeight);
+});
+
+// ==================== THEME TOGGLE ====================
+const themeToggle = document.getElementById('themeToggle');
+const html = document.documentElement;
+const savedTheme = localStorage.getItem('theme') || 'dark';
+html.setAttribute('data-theme', savedTheme);
+
+themeToggle.addEventListener('click', () => {
+  const current = html.getAttribute('data-theme');
+  const next = current === 'dark' ? 'light' : 'dark';
+  html.setAttribute('data-theme', next);
+  localStorage.setItem('theme', next);
+
+  // Update 3D colors for theme
+  const isLight = next === 'light';
+  const accentColor = isLight ? 0x0284c7 : 0x00c8ff;
+  particlesMat.color.set(accentColor);
+  knotMat.color.set(accentColor);
+  icoMat.color.set(isLight ? 0x6d28d9 : 0x7c3aed);
+  orbs.forEach(o => o.material.color.set(accentColor));
+
+  // Update radar chart
+  drawRadar();
+});
+
+// ==================== CANVAS RADAR CHART ====================
+const radarCanvas = document.getElementById('radar-canvas');
+const radarCtx = radarCanvas.getContext('2d');
+
+const skillData = [
+  { label: '英语', value: 78 },
+  { label: '合规风控', value: 72 },
+  { label: '数据分析', value: 65 },
+  { label: 'Excel/WPS', value: 80 },
+  { label: 'Python', value: 50 },
+  { label: 'MySQL', value: 40 },
+];
+
+let radarProgress = 0;
+let radarAnimating = false;
+
+function drawRadar(progress = 1) {
+  const isLight = html.getAttribute('data-theme') === 'light';
+  const w = radarCanvas.width;
+  const h = radarCanvas.height;
+  const cx = w / 2;
+  const cy = h / 2;
+  const maxR = 130;
+  const levels = 5;
+  const sides = skillData.length;
+
+  radarCtx.clearRect(0, 0, w, h);
+
+  // Grid
+  for (let level = 1; level <= levels; level++) {
+    const r = (maxR / levels) * level;
+    radarCtx.beginPath();
+    for (let i = 0; i < sides; i++) {
+      const angle = (Math.PI * 2 / sides) * i - Math.PI / 2;
+      const x = cx + r * Math.cos(angle);
+      const y = cy + r * Math.sin(angle);
+      i === 0 ? radarCtx.moveTo(x, y) : radarCtx.lineTo(x, y);
+    }
+    radarCtx.closePath();
+    radarCtx.strokeStyle = isLight ? 'rgba(0,0,0,0.1)' : 'rgba(255,255,255,0.08)';
+    radarCtx.lineWidth = 1;
+    radarCtx.stroke();
+  }
+
+  // Axes
+  for (let i = 0; i < sides; i++) {
+    const angle = (Math.PI * 2 / sides) * i - Math.PI / 2;
+    radarCtx.beginPath();
+    radarCtx.moveTo(cx, cy);
+    radarCtx.lineTo(cx + maxR * Math.cos(angle), cy + maxR * Math.sin(angle));
+    radarCtx.strokeStyle = isLight ? 'rgba(0,0,0,0.1)' : 'rgba(255,255,255,0.08)';
+    radarCtx.stroke();
+  }
+
+  // Data polygon
+  radarCtx.beginPath();
+  for (let i = 0; i < sides; i++) {
+    const angle = (Math.PI * 2 / sides) * i - Math.PI / 2;
+    const val = (skillData[i].value / 100) * maxR * progress;
+    const x = cx + val * Math.cos(angle);
+    const y = cy + val * Math.sin(angle);
+    i === 0 ? radarCtx.moveTo(x, y) : radarCtx.lineTo(x, y);
+  }
+  radarCtx.closePath();
+  const accentColor = isLight ? 'rgba(2,132,199,0.3)' : 'rgba(0,200,255,0.25)';
+  radarCtx.fillStyle = accentColor;
+  radarCtx.fill();
+  const accentStroke = isLight ? 'rgba(2,132,199,0.8)' : 'rgba(0,200,255,0.7)';
+  radarCtx.strokeStyle = accentStroke;
+  radarCtx.lineWidth = 2;
+  radarCtx.stroke();
+
+  // Data points
+  for (let i = 0; i < sides; i++) {
+    const angle = (Math.PI * 2 / sides) * i - Math.PI / 2;
+    const val = (skillData[i].value / 100) * maxR * progress;
+    const x = cx + val * Math.cos(angle);
+    const y = cy + val * Math.sin(angle);
+    radarCtx.beginPath();
+    radarCtx.arc(x, y, 4, 0, Math.PI * 2);
+    radarCtx.fillStyle = isLight ? '#0284c7' : '#00c8ff';
+    radarCtx.fill();
+  }
+
+  // Labels
+  radarCtx.fillStyle = isLight ? '#1a1d2e' : '#e4e8f0';
+  radarCtx.font = '12px "PingFang SC", "Microsoft YaHei", sans-serif';
+  radarCtx.textAlign = 'center';
+  for (let i = 0; i < sides; i++) {
+    const angle = (Math.PI * 2 / sides) * i - Math.PI / 2;
+    const labelR = maxR + 20;
+    const x = cx + labelR * Math.cos(angle);
+    const y = cy + labelR * Math.sin(angle) + 4;
+    radarCtx.fillText(skillData[i].label, x, y);
+  }
+
+  // Center value labels
+  radarCtx.fillStyle = isLight ? 'rgba(0,0,0,0.4)' : 'rgba(255,255,255,0.3)';
+  radarCtx.font = '10px "PingFang SC", "Microsoft YaHei", sans-serif';
+  for (let i = 0; i < sides; i++) {
+    const angle = (Math.PI * 2 / sides) * i - Math.PI / 2;
+    const val = (skillData[i].value / 100) * maxR * progress;
+    const x = cx + (val - 16) * Math.cos(angle);
+    const y = cy + (val - 16) * Math.sin(angle) + 3;
+    radarCtx.fillText(skillData[i].value + '%', x, y);
+  }
+}
+
+// Initial draw
+drawRadar(0);
+
+// Animate radar on scroll
+function animateRadar() {
+  if (radarAnimating) return;
+  radarAnimating = true;
+  radarProgress = 0;
+  const duration = 1500;
+  const start = performance.now();
+  function step(now) {
+    const elapsed = now - start;
+    radarProgress = Math.min(1, elapsed / duration);
+    // Ease out cubic
+    const eased = 1 - Math.pow(1 - radarProgress, 3);
+    drawRadar(eased);
+    if (radarProgress < 1) {
+      requestAnimationFrame(step);
+    }
+  }
+  requestAnimationFrame(step);
+}
+
+// ==================== TYPING ANIMATION ====================
+const typingTexts = [
+  '合规风控 · 反洗钱 · 数据分析',
+  'Compliance · Risk Management · AML',
+  'Python · Excel · MySQL',
+];
+let textIndex = 0;
+let charIndex = 0;
+let isDeleting = false;
+const typingEl = document.getElementById('typingText');
+
+function typeLoop() {
+  const current = typingTexts[textIndex];
+  if (isDeleting) {
+    typingEl.textContent = current.substring(0, charIndex - 1);
+    charIndex--;
+  } else {
+    typingEl.textContent = current.substring(0, charIndex + 1);
+    charIndex++;
+  }
+
+  let speed = isDeleting ? 30 : 60;
+
+  if (!isDeleting && charIndex === current.length) {
+    speed = 2000;
+    isDeleting = true;
+  } else if (isDeleting && charIndex === 0) {
+    isDeleting = false;
+    textIndex = (textIndex + 1) % typingTexts.length;
+    speed = 300;
+  }
+
+  setTimeout(typeLoop, speed);
+}
+typeLoop();
+
+// ==================== GSAP SCROLL ANIMATIONS ====================
+gsap.registerPlugin(ScrollTrigger);
+
+// Reveal elements on scroll
+document.querySelectorAll('.reveal').forEach(el => {
+  gsap.fromTo(el,
+    { opacity: 0, y: 50 },
+    {
+      opacity: 1, y: 0,
+      duration: 0.8,
+      ease: 'power3.out',
+      scrollTrigger: {
+        trigger: el,
+        start: 'top 88%',
+        end: 'top 60%',
+        toggleActions: 'play none none reverse',
+      }
+    }
+  );
+});
+
+// Parallax on glass cards
+document.querySelectorAll('.glass-card').forEach(card => {
+  gsap.fromTo(card,
+    { y: 60, opacity: 0 },
+    {
+      y: 0, opacity: 1,
+      duration: 1,
+      ease: 'power3.out',
+      scrollTrigger: {
+        trigger: card,
+        start: 'top 90%',
+        end: 'top 60%',
+        toggleActions: 'play none none reverse',
+      }
+    }
+  );
+});
+
+// Animate radar chart when it comes into view
+ScrollTrigger.create({
+  trigger: '#radar-canvas',
+  start: 'top 85%',
+  onEnter: animateRadar,
+  once: true
+});
+
+// Section tags stagger
+gsap.utils.toArray('.section-tag').forEach(tag => {
+  gsap.from(tag, {
+    x: -30, opacity: 0, duration: 0.6, ease: 'power2.out',
+    scrollTrigger: { trigger: tag, start: 'top 90%', toggleActions: 'play none none reverse' }
+  });
+});
+
+// Smooth nav highlighting
+const sections = document.querySelectorAll('section[id]');
+const navLinks = document.querySelectorAll('.nav-link');
+window.addEventListener('scroll', () => {
+  let current = '';
+  sections.forEach(section => {
+    const top = section.offsetTop - 100;
+    if (window.scrollY >= top) current = section.getAttribute('id');
+  });
+  navLinks.forEach(link => {
+    link.classList.toggle('active', link.getAttribute('href') === '#' + current);
+  });
+});
+
+// ==================== CUSTOM CURSOR ====================
+const cursorDot = document.getElementById('cursorDot');
+const cursorRing = document.getElementById('cursorRing');
+
+document.addEventListener('mousemove', (e) => {
+  cursorDot.style.left = e.clientX + 'px';
+  cursorDot.style.top = e.clientY + 'px';
+  // Ring follows with delay via GSAP
+  gsap.to(cursorRing, { left: e.clientX, top: e.clientY, duration: 0.15, ease: 'power2.out' });
+});
+
+// Cursor hover effect on interactive elements
+const hoverTargets = document.querySelectorAll('a, button, .glass-card, .skill-tag, .nav-logo, .contact-item');
+hoverTargets.forEach(el => {
+  el.addEventListener('mouseenter', () => {
+    cursorDot.classList.add('hover');
+    cursorRing.classList.add('hover');
+  });
+  el.addEventListener('mouseleave', () => {
+    cursorDot.classList.remove('hover');
+    cursorRing.classList.remove('hover');
+  });
+});
+
+// ==================== INIT ====================
+console.log('%c🚀 Advanced Resume %cby 徐洪磊',
+  'font-size:20px;font-weight:bold;color:#00c8ff;',
+  'color:#e4e8f0;');
+console.log('%cTech Stack: Three.js + GSAP + Canvas API + CSS Custom Properties',
+  'color:#8892a4;');
+console.log('%c💡 Try toggling the theme button in the top right!',
+  'color:#7c3aed;');
+</script>
 </body>
 </html>
